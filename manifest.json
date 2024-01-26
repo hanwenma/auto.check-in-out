@@ -1,0 +1,41 @@
+{
+  "name": "Auto Check-in-Out",
+  "description": "Auto Check-in-Out for you！",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["scripting", "tabs", "activeTab", "storage"],
+  "host_permissions": ["https://*/", "http://*/", "<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "libs/fp.min.js",
+        "libs/jquery.min.js",
+        "config/index.js",
+        "scripts/content.js"
+      ],
+      "matches": [
+        "https://om.tencent.com/*",
+        "https://tapd.tencent.com/*",
+        "https://10.18.119.66:1888/*",
+        "https://juejin.cn/*"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Auto Check In Out",
+    "default_icon": "icons/icon.png"
+  },
+  "icons": {
+    "16": "icons/icon.png",
+    "32": "icons/icon.png",
+    "48": "icons/icon.png",
+    "128": "icons/icon.png"
+  }
+}
