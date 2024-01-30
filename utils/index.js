@@ -6,6 +6,38 @@ function textLogWithStyle(text = "+", color = "blue", size = 16) {
   );
 }
 
+function textColorWithAnimation(text, fontSize= '20px'){
+  console.log(
+    `%c${text}`,
+    `font-size: ${fontSize};
+    background: linear-gradient(
+      to right,
+      purple,
+      red,
+      orange,
+      yellow,
+      green,
+      cyan,
+      blue,
+      purple,
+      red,
+      orange,
+      yellow,
+      green,
+      cyan,
+      blue,
+      purple
+    );
+    background-size: 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 5px 10px #fff;
+    font-weight: bold;
+    animation: text-color 3s ease-in-out infinite;`
+  );
+}
+
 // 带有图片的 log
 function imageLogWithStyle(url = "", padding = "0") {
   console.log(
@@ -349,25 +381,26 @@ async function getBrowserFinger(callback) {
 // 获取周信息
 function getWeekDay() {
   const weekDays = [
+    { zh: "周日", en: "Sunday" },
     { zh: "周一", en: "Monday" },
     { zh: "周二", en: "Tuesday" },
     { zh: "周三", en: "Wednesday" },
     { zh: "周四", en: "Thursday" },
     { zh: "周五", en: "Friday" },
     { zh: "周六", en: "Saturday" },
-    { zh: "周日", en: "Sunday" },
   ];
 
   const targetDate = moment(new Date());
   const targetDayIndex = targetDate.day();
 
   // 周末
-  let dayOfWeek = weekDays[targetDayIndex - 1];
-  const isWeekend = targetDayIndex === 6 || targetDayIndex === 7;
+  let dayOfWeek = weekDays[targetDayIndex];
+  const isWeekend = targetDayIndex === 6 || targetDayIndex === 0;
+
 
   // 判断目标日期是否为周六或者周天（公共假日）
   if (isWeekend) {
-    dayOfWeek = weekDays[targetDayIndex - 1];
+    dayOfWeek = weekDays[targetDayIndex];
   }
 
   // 不需要打卡日期
@@ -377,15 +410,16 @@ function getWeekDay() {
   let notCheckDate = notCheckDates[1] || notCheckDates[0];
 
   let futureHours = 0;
+  const clock = '08:00';
   if (notCheckDate || isWeekend) {
-    let dateStr = new Date();
+    let dateStr = moment().format('YYYY-MM-DD');
 
     if (notCheckDate) {
-      dateStr = notCheckDate + " 08:00";
+      dateStr = notCheckDate;
     }
 
     // 加一天的目的是为了达到打卡日期
-    futureHours = moment(dateStr).add(1, "days").diff(moment(), "hours");
+    futureHours = moment(`${dateStr} ${clock}`).add(1, "days").diff(moment(), "hours");
   }
 
   return {

@@ -19,7 +19,7 @@ window.onerror = (message, url, lineNo, columnNo) => {
 };
 
 // 计时器变量
-let interval, interval0, interval1, interval2;
+let interval, interval0, interval1, interval2, timeout0;
 // 当前是否已迁出
 let hasCheckInOrOut = false;
 // 当前操作类型
@@ -70,35 +70,47 @@ function checkTrigger() {
   }, 3000);
 }
 
+// 检测当前日期和目标时间剩余小时
+function getLeftTimeFormTargetTime(futureTime, type) {
+  const currentDate = moment().format("YYYY-MM-DD");
+  const leftTime = moment(`${currentDate} ${futureTime}`).diff(moment(), type);
+  return leftTime;
+}
+
 // 开始签出
-function startCheckOut(th = cko_th, tm = cko_tm, delay = cko_delay) {
-  textLogWithStyle(
-    `Target checkout time【 ${getTimeString(th)}:${getTimeString(tm)} 】!`,
-    "rgb(243, 152, 1)",
-    20
+function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
+
+  // 获取距离目标时间的剩余分钟数，因为小时数不准确
+  const leftMinutes = getLeftTimeFormTargetTime(
+    `${getTimeString(th)}:${getTimeString(tm)}`,
+    "minutes"
   );
-  textLogWithStyle("Start patrol inspection ...");
+  delay = leftMinutes * 60 * 1000;
+
   textLogWithStyle(
-    `The current polling interval is【 ${getTimeFromMillisecond(delay)} 】!`,
+    `Target checkout time【 ${getTimeString(th)}:${getTimeString(tm)} 】, and the polling time is adjusted to 【 ${getTimeFromMillisecond(
+      delay
+    )} 】!`,
     "rgb(243, 152, 1)",
-    20
+    25
   );
+  
+  textColorWithAnimation("To be continued ...", "30px");
 
   // 轮询判断是否到达或超过目标时间
-  clearInterval(interval1);
-  interval1 = setInterval(() => {
+  clearInterval(timeout0);
+  timeout0 = setTimeout(() => {
+    // 是否达到或超过目标时间
     const d = new Date();
     const hours = d.getHours();
     const minutes = d.getMinutes();
-
-    // 是否达到或超过目标时间
     const isAtTime = hours > th || (hours == th && minutes >= tm);
 
+    // 已达到指定时间
     if (isAtTime) {
-      clearInterval(interval1);
-
+      clearInterval(timeout0);
       textLogWithStyle(
-        "Target time reached or exceeded, start triggering automatic checkout ...",
+        "Target time reached or exceeded, start triggering automatic checkout !!!",
         "green"
       );
 
@@ -108,9 +120,15 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = cko_delay) {
       //  触发签出逻辑
       checkTrigger();
     } else {
+
+      // 未到指定时间
       textLogWithStyle(
-        "The current time has not reached or exceeded the target time, and the next round of detection will begin !!!"
+        "The current time has not reached or exceeded the target time, and the next round of detection will begin !!!",
+        "#f40"
       );
+
+      // 递归执行
+      startCheckOut(cko_th, cko_tm);
     }
   }, delay);
 }
@@ -266,7 +284,8 @@ function sendPageResult() {
   const { futureHours, dayOfWeek, notCheckDates, isWeekend } = getWeekDay();
   const notCheckToday = notCheckDates.includes(moment().format("YYYY-MM-DD"));
 
-  let delay = 0, preTimer;
+  let delay = 0,
+    preTimer;
 
   // 周末 或 自定义 非打卡期间
   if (futureHours && (notCheckToday || isWeekend)) {
