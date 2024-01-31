@@ -1,6 +1,5 @@
 const Names = [
   "background-execute-tentcent-script",
-  "background-execute-advanced-settings",
   "background-capture-visible-tab",
   "background-execute-juejin-script",
 ];
@@ -53,28 +52,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       break;
 
     case Names[1]:
-      const index = tab.index - 1;
-
-      // 关闭当前 tab 页
-      chrome.tabs.remove([tab.id]);
-
-      setTimeout(async () => {
-        // 聚焦上一个 tab 页
-        await chrome.tabs.highlight({ tabs: index });
-        // 接着刷新页面
-        chrome.tabs.reload();
-      }, 1000);
-
-      break;
-
-    case Names[2]:
       // 截图操作
       chrome.tabs.captureVisibleTab(null, {}, (dataUrl) => {
         chrome.storage.local.set({ captureDataUrl: dataUrl });
       });
       break;
 
-    case Names[3]:
+    case Names[2]:
       // 执行脚本
       chrome.scripting.executeScript({
         target: { tabId: tab.id },

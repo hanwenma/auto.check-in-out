@@ -169,7 +169,7 @@ async function matchSites(visitorId) {
 
       break;
 
-    // 服务站点
+    // 服务站点 ( 暂无用 )
     case Sites[2]:
       const mainMessageEle = document.querySelector("#main-message");
 
@@ -182,11 +182,6 @@ async function matchSites(visitorId) {
         document.querySelector("#details-button").click();
         // 触发继续前往按钮
         document.querySelector("#proceed-link").click();
-
-        // 发起消息让 background.js 刷新目标 tab
-        chrome.runtime.sendMessage({
-          name: "background-execute-advanced-settings",
-        });
       }
 
       break;
@@ -197,10 +192,12 @@ async function matchSites(visitorId) {
       chrome.runtime.sendMessage({
         name: "background-execute-juejin-script",
       });
+
       break;
 
     default:
       alert("Currently a non-target site!");
+      
       break;
   }
 }

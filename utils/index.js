@@ -332,10 +332,6 @@ function createLogoImage() {
   image.src = src;
   image.style.height = "60px";
   image.id = "auto_gif";
-  // 发生错误代表需要自动进行 高级安全 认证
-  image.onerror = () => {
-    window.open(src);
-  }
 
   const logo = $("#logo")[0];
 
