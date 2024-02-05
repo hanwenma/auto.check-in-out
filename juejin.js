@@ -115,4 +115,4 @@ function init() {
   setTimeout(autoCheckIn, commomDelay);
 }
 
-init();
+// init();

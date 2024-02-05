@@ -1,5 +1,5 @@
 $(function () {
-  console.log(new Date);
+  console.log(new Date());
 
   let currentTab = null;
   let visitorId = "";
@@ -96,7 +96,7 @@ $(function () {
     });
   }
 
-  /* 注册日期时间 */
+  /* 注册日期事件 */
   function registerDateEvent() {
     // 初始化
     const notCheckDates = JSON.parse(
@@ -123,6 +123,18 @@ $(function () {
     });
   }
 
+  /* 注册单选框事件 */
+  function registerCheckboxEvent() {
+    // 初始化
+    const weekendAction = localStorage.getItem("weekendAction");
+    $("#weekend-checkbox").attr("checked", !!weekendAction);
+
+    // 具体事件
+    $("#weekend-checkbox").on("change", function () {
+      console.log($("input[type='checkbox']:checked").length);
+    });
+  }
+
   /* 按钮操作 */
   async function btnActions(type) {
     $(".loading").show();
@@ -139,11 +151,18 @@ $(function () {
       );
     }
 
+    // 周末是否需要打卡
+    const weekendAction = $("input[type='checkbox']:checked").length
+      ? "checked"
+      : "";
+    localStorage.setItem("weekendAction", weekendAction);
+
     // 0 - 签入和签出  1 - 取消
     const response = await chrome.tabs.sendMessage(currentTab.id, {
       name: "content-execute-script",
       type,
       notCheckDates,
+      weekendAction,
     });
 
     let delay = 500;
@@ -155,6 +174,8 @@ $(function () {
       $("#start-date").val("");
       $("#end-date").val("");
       localStorage.removeItem("notCheckDates");
+      localStorage.removeItem("weekendAction");
+      $("#weekend-checkbox").attr("checked", false);
     }
 
     // 延时关闭 loading
@@ -233,8 +254,11 @@ $(function () {
     // 注册表单事件
     registerFormEvent();
 
-    // 注册日期时间
+    // 注册日期事件
     registerDateEvent();
+
+    // 注册单选框事件
+    registerCheckboxEvent();
 
     // 判断是否需要自动进行权限认证
     const response = await chrome.tabs.sendMessage(currentTab.id, {

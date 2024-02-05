@@ -19,7 +19,7 @@ window.onerror = (message, url, lineNo, columnNo) => {
 };
 
 // 计时器变量
-let interval, interval0, interval1, interval2, timeout0;
+let interval, interval0, interval1, interval2, timeout0, timeout1;
 // 当前是否已迁出
 let hasCheckInOrOut = false;
 // 当前操作类型
@@ -79,7 +79,6 @@ function getLeftTimeFormTargetTime(futureTime, type) {
 
 // 开始签出
 function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
-
   // 获取距离目标时间的剩余分钟数，因为小时数不准确
   const leftMinutes = getLeftTimeFormTargetTime(
     `${getTimeString(th)}:${getTimeString(tm)}`,
@@ -88,13 +87,15 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
   delay = leftMinutes * 60 * 1000;
 
   textLogWithStyle(
-    `Target checkout time【 ${getTimeString(th)}:${getTimeString(tm)} 】, and the polling time is adjusted to 【 ${getTimeFromMillisecond(
+    `Target checkout time【 ${getTimeString(th)}:${getTimeString(
+      tm
+    )} 】, and the polling time is adjusted to 【 ${getTimeFromMillisecond(
       delay
     )} 】!`,
     "rgb(243, 152, 1)",
     25
   );
-  
+
   textColorWithAnimation("To be continued ...", "30px");
 
   // 轮询判断是否到达或超过目标时间
@@ -120,7 +121,6 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
       //  触发签出逻辑
       checkTrigger();
     } else {
-
       // 未到指定时间
       textLogWithStyle(
         "The current time has not reached or exceeded the target time, and the next round of detection will begin !!!",
@@ -159,7 +159,18 @@ function startCheckIn() {
 }
 
 // 签入相关
-function checkInTimeChecker(th = cki_th, tm = cki_tm, delay = cki_delay) {
+function checkInTimeChecker(
+  th = cki_th,
+  tm = parseInt(Math.random() * 10) + 30
+) {
+
+  const tomorrowHours = moment(
+    `${moment().format("YYYY-MM-DD")} ${getTimeString(th)}:${getTimeString(tm)}`
+  )
+    .add(1, "days")
+    .diff(moment(), "hours");
+  const delay = tomorrowHours * 60 * 60 * 1000;
+
   // 有值，证明已经刷新过页面，不需要在刷新页面
   if (localStorage.getItem("hasRefreshedForCheckIn")) {
     textLogWithStyle(`Check-in page is ready！！！`, "green", 30);
@@ -179,8 +190,8 @@ function checkInTimeChecker(th = cki_th, tm = cki_tm, delay = cki_delay) {
     20
   );
 
-  clearInterval(interval);
-  interval = setInterval(() => {
+  clearTimeout(timeout1);
+  timeout1 = setTimeout(() => {
     const d = new Date();
     const hours = d.getHours();
     const minutes = d.getMinutes();
@@ -207,7 +218,7 @@ function checkInTimeChecker(th = cki_th, tm = cki_tm, delay = cki_delay) {
         "green"
       );
 
-      clearInterval(interval);
+      clearTimeout(timeout1);
 
       localStorage.setItem("hasRefreshedForCheckIn", true);
 
@@ -217,6 +228,8 @@ function checkInTimeChecker(th = cki_th, tm = cki_tm, delay = cki_delay) {
       textLogWithStyle(
         "The current time has not reached or exceeded the target time, and the next round of detection will begin !!!"
       );
+      // 未到时间则递归执行
+      checkInTimeChecker();
     }
   }, delay);
 }
@@ -231,9 +244,6 @@ function init() {
     if ($(".pad_space")[0]) {
       textLogWithStyle("The main content of the page is ready !!!");
       clearInterval(interval0);
-
-      // 创建页面 logo
-      createLogoImage();
 
       // 获取默认的时间
       const { checkOutHours, checkOutMinutes, checkType, totalCheckOutTime } =
@@ -274,6 +284,9 @@ function sendPageResult() {
 
 // 自执行函数
 (async function () {
+  // 创建页面 logo
+  createLogoImage();
+
   // 表明当前脚本已经被执行过，重复执行会发生异常
   localStorage.setItem("executeChkIO", true);
 
@@ -292,7 +305,7 @@ function sendPageResult() {
     delay = futureHours * 60 * 60 * 1000;
 
     textLogWithStyle(
-      `Today is ${dayOfWeek.en}【 ${dayOfWeek.zh} 】，The time interval has been adjusted to【 ${futureHours} hours 】!`,
+      `Today is ${dayOfWeek.en}【 ${dayOfWeek.zh} 】，Today does not require auto check，The time interval has been adjusted to【 ${futureHours} hours 】!`,
       "#eb7114",
       30
     );

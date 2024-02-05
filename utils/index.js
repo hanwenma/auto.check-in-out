@@ -6,7 +6,7 @@ function textLogWithStyle(text = "+", color = "blue", size = 16) {
   );
 }
 
-function textColorWithAnimation(text, fontSize= '20px'){
+function textColorWithAnimation(text, fontSize = "20px") {
   console.log(
     `%c${text}`,
     `font-size: ${fontSize};
@@ -199,7 +199,7 @@ async function sendEmail(result, errorInfo) {
     luckyCode: image ? getBase64(image) : "",
     error: errorInfo,
     checkType,
-    captureDataUrl: chromeStorageLocal.captureDataUrl
+    captureDataUrl: chromeStorageLocal.captureDataUrl,
   };
 
   $.ajax({
@@ -213,11 +213,11 @@ async function sendEmail(result, errorInfo) {
     contentType: false, // 避免 ajax 请求异常
     success: function (res) {
       console.log("success = ", res);
-      chrome.storage.local.set({ captureDataUrl: '' });
+      chrome.storage.local.set({ captureDataUrl: "" });
     },
     error: function (res) {
       console.log("error = ", res);
-      chrome.storage.local.set({ captureDataUrl: '' });
+      chrome.storage.local.set({ captureDataUrl: "" });
     },
   });
 }
@@ -286,7 +286,7 @@ function getTimeString(n) {
 }
 
 // 获取默认目标签出时间
-function getDefaultTime({ hasCheckIn, checkInTime, checkType }) {
+function getDefaultTime({ hasCheckIn, checkInTime }) {
   let checkOutHours = 18,
     checkOutMinutes = 0;
 
@@ -302,14 +302,22 @@ function getDefaultTime({ hasCheckIn, checkInTime, checkType }) {
       )} : ${getTimeString(targetMoment.minutes())} 】`
     );
 
-    // 小于 18 签出不合格，当目标时间大于默认的 18 时，需要以大的时间为准
+    // 小于 18 签出不合格，当目标时间大于等于默认的 18 时，需要以大的时间为准
     if (targetMoment.hour() >= checkOutHours) {
       checkOutHours = targetMoment.hour();
       checkOutMinutes = targetMoment.minutes();
     }
 
+    // 当目标签出分钟数等于 0 ，即准点时，要替换为随机数
+    if (targetMoment.minutes() == 0) {
+      checkOutMinutes = parseInt(Math.random() * 20);
+    }
+
     // 当分钟数不一致，意味着需要重置
-    if (targetMoment.hour() !== checkOutHours || targetMoment.minutes() !== targetMoment.minutes()) {
+    if (
+      targetMoment.hour() !== checkOutHours ||
+      targetMoment.minutes() !== checkOutMinutes
+    ) {
       textLogWithStyle(
         `【自动调整】后【签出时间】为【 ${getTimeString(
           checkOutHours
@@ -391,8 +399,11 @@ function getWeekDay() {
 
   // 周末
   let dayOfWeek = weekDays[targetDayIndex];
-  const isWeekend = targetDayIndex === 6 || targetDayIndex === 0;
+  let isWeekend = targetDayIndex === 6 || targetDayIndex === 0;
 
+  // 设定周末需要打卡时，覆盖前面的判断值
+  const weekendAction = localStorage.getItem("weekendAction");
+  if (weekendAction) isWeekend = false;
 
   // 判断目标日期是否为周六或者周天（公共假日）
   if (isWeekend) {
@@ -402,20 +413,22 @@ function getWeekDay() {
   // 不需要打卡日期
   const notCheckDates = JSON.parse(
     localStorage.getItem("notCheckDates") || "[]"
-  );
+  ).filter((v) => v);
   let notCheckDate = notCheckDates[1] || notCheckDates[0];
 
   let futureHours = 0;
-  const clock = '08:00';
+  const clock = `08:${getTimeString(parseInt(Math.random() * 10 + 10))}`;
   if (notCheckDate || isWeekend) {
-    let dateStr = moment().format('YYYY-MM-DD');
+    let dateStr = moment().format("YYYY-MM-DD");
 
     if (notCheckDate) {
       dateStr = notCheckDate;
     }
 
     // 加一天的目的是为了达到打卡日期
-    futureHours = moment(`${dateStr} ${clock}`).add(1, "days").diff(moment(), "hours");
+    futureHours = moment(`${dateStr} ${clock}`)
+      .add(1, "days")
+      .diff(moment(), "hours");
   }
 
   return {

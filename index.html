@@ -74,9 +74,15 @@
         align-items: center;
         flex-direction: column;
       }
-      .date-group {
+      .date-group,
+      .action-at-weekend {
         font-size: 20px;
         margin-bottom: 20px;
+      }
+      input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
       }
       input[type="date"] {
         font-size: 20px;
@@ -232,10 +238,15 @@
     <div class="operation-box">
       <div class="date-group">
         <h1>默认周末属于非打卡日期，若周末需要打卡，请自定义不打卡期限！</h1>
-        <label>不需自动打卡日期范围：</label>
+        <label>不需打卡日期：</label>
         <input type="date" id="start-date" value="" min="" max="" />
         <label> ~ </label>
         <input type="date" id="end-date" value="" min="" max="" />
+      </div>
+
+      <div class="action-at-weekend">
+        <label>本周末打卡：</label>
+        <input type="checkbox" id="weekend-checkbox" />
       </div>
 
       <div class="btn ckeck_in_out_btn">
