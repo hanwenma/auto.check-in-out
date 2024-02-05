@@ -84,7 +84,7 @@ function comfirmInOrOutAction() {
 }
 
 // 校验验证码
-let timeout1;
+let timeout2;
 function verifyCode(text) {
   textLogWithStyle("start verify code ...");
 
@@ -118,8 +118,8 @@ function verifyCode(text) {
     );
 
     // 切换新的验证码，此时会重新触发 image 元素的 onload 事件，实现自动调用
-    clearTimeout(timeout1);
-    timeout1 = setTimeout(() => {
+    clearTimeout(timeout2);
+    timeout2 = setTimeout(() => {
       document.querySelector("#secur_code_change").click();
     }, 10000);
   }
