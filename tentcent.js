@@ -163,12 +163,17 @@ function checkInTimeChecker(
   th = cki_th,
   tm = parseInt(Math.random() * 10) + 30
 ) {
-
-  const tomorrowHours = moment(
+  const tomorrowDate = moment(
     `${moment().format("YYYY-MM-DD")} ${getTimeString(th)}:${getTimeString(tm)}`
-  )
-    .add(1, "days")
-    .diff(moment(), "hours");
+  );
+
+  const shouldCheckInToday =
+    $(".pad_space").next()[0].innerText == "未签入";
+
+  const tomorrowHours = shouldCheckInToday
+    ? tomorrowDate.diff(moment(), "hours")
+    : tomorrowDate.add(1, "days").diff(moment(), "hours");
+
   const delay = tomorrowHours * 60 * 60 * 1000;
 
   // 有值，证明已经刷新过页面，不需要在刷新页面
@@ -184,11 +189,14 @@ function checkInTimeChecker(
     "rgb(243, 152, 1)",
     20
   );
+
   textLogWithStyle(
     `The current polling interval is【 ${getTimeFromMillisecond(delay)} 】!`,
     "rgb(243, 152, 1)",
     20
   );
+
+  textColorWithAnimation("To be continued ...", "30px");
 
   clearTimeout(timeout1);
   timeout1 = setTimeout(() => {
