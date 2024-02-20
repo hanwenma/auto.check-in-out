@@ -171,7 +171,7 @@ function checkInTimeChecker(
     $(".pad_space").next()[0].innerText == "未签入";
 
   const tomorrowHours = shouldCheckInToday
-    ? tomorrowDate.diff(moment(), "hours")
+    ? 0
     : tomorrowDate.add(1, "days").diff(moment(), "hours");
 
   const delay = tomorrowHours * 60 * 60 * 1000;
