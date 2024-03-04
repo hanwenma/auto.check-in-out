@@ -1,4 +1,8 @@
-function logMessage() {
+const commomDelay = 3000;
+const submitDelay = 5000;
+const KeyTexts = ["去签到", "立即签到"];
+
+function logExtensionInfo() {
   const text = `
           M          M           M    M M M M M M M         M                         M       M  M
          M M         M           M          M            M      M                     M     M      M
@@ -28,7 +32,47 @@ function logMessage() {
   );
 }
 
-// 准备下一次的签入
+function createScriptSource(src) {
+  const script = document.createElement("script");
+  script.src = src;
+  document.body.appendChild(script);
+}
+
+function loadPreSource() {
+  const sources = [
+    "https://code.jquery.com/jquery-3.7.1.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js",
+  ];
+  sources.forEach(createScriptSource);
+}
+
+function sleep(delay) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, delay);
+  });
+}
+
+async function start() {
+  await sleep(commomDelay);
+  $(".signin-btn").click(); // 点击去签到按钮
+
+  await sleep(commomDelay);
+  $(".signin.btn").click(); // 点击立即签到按钮
+
+  await sleep(commomDelay);
+  $(".btn-area .btn").click(); // 点击去抽奖
+
+  await sleep(commomDelay);
+  $("#turntable-item-0").click(); // 点击免费抽奖
+
+  await sleep(submitDelay);
+  $(".submit").click(); // 点击收下奖励
+
+  prepareNextChectIn();// 准备下一次签到
+}
+
 function prepareNextChectIn() {
   const hours = moment(moment().format("YYYY-MM-DD") + " 07:00")
     .add(1, "days")
@@ -42,77 +86,39 @@ function prepareNextChectIn() {
   );
 
   setTimeout(() => {
-    location.href = "https://juejin.cn";
+    location.href = "https://juejin.cn";// 跳转到签到页
   }, hours * 60 * 60 * 1000);
 }
 
-const commomDelay = 3000;
-const submitDelay = 5000;
 function autoCheckIn() {
   const GoCkITetx = $(".signin-btn").text().trim();
   const ImCkIText = $(".signin.btn").text().trim();
-  const Texts = ["去签到", "立即签到"];
 
   switch (GoCkITetx || ImCkIText) {
-    case Texts[0]:
+    case KeyTexts[0]:
       // 点击去签到按钮
       $(".signin-btn").click();
       break;
 
-    case Texts[1]:
-      // 点击立即签到按钮
-      $(".signin.btn").click();
-
-      setTimeout(() => {
-        // 点击去抽奖
-        $(".btn-area .btn").click();
-
-        setTimeout(() => {
-          // 点击免费抽奖
-          $("#turntable-item-0").click();
-
-          setTimeout(() => {
-            // 点击收下奖励
-            $(".submit").click();
-
-            // 准备下一次签入
-            prepareNextChectIn();
-          }, submitDelay);
-        }, commomDelay);
-      }, commomDelay);
+    case KeyTexts[1]:
+      // 正式开始签到
+      start();
       break;
 
     default:
-      const text = $(".signedin-btn").text().trim();
-      if (text) {
-        console.log(
-          `%cCurrent status【 ${text} 】，No check-in required!`,
-          `
-              color: orange;
-              font-size: 20px;
-              font-weight: bold;`
-        );
-      } else {
-        console.log(
-          `%cNot match any action!`,
-          `
-              color: #f40;
-              font-size: 20px;
-              font-weight: bold;`
-        );
-      }
-      if (location.href === "https://juejin.cn/" && $('.avatar-img').attr('src')) {
-        // 准备下一次签入
-        prepareNextChectIn();
-      }
+      // 准备下次签到
+      prepareNextChectIn();
       break;
   }
 }
 
 function init() {
-  logMessage();
+  // 输出提示
+  logExtensionInfo();
 
-  setTimeout(autoCheckIn, commomDelay);
+  // 加载前置资源
+  loadPreSource();
+
+  // 签入
+  autoCheckIn();
 }
-
-// init();

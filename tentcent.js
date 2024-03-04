@@ -170,11 +170,11 @@ function checkInTimeChecker(
   const shouldCheckInToday =
     $(".pad_space").next()[0].innerText == "未签入";
 
-  const tomorrowHours = shouldCheckInToday
+  const tomorrowMinutes = shouldCheckInToday
     ? 0
-    : tomorrowDate.add(1, "days").diff(moment(), "hours");
+    : tomorrowDate.add(1, "days").diff(moment(), "minutes");
 
-  const delay = tomorrowHours * 60 * 60 * 1000;
+  const delay = tomorrowMinutes * 60 * 1000;
 
   // 有值，证明已经刷新过页面，不需要在刷新页面
   if (localStorage.getItem("hasRefreshedForCheckIn")) {
@@ -204,9 +204,6 @@ function checkInTimeChecker(
     const hours = d.getHours();
     const minutes = d.getMinutes();
 
-    // 是否达到或超过目标时间
-    const isAtTime = hours > th || (hours == th && minutes >= tm);
-
     // 避免晚上 18 - 23 点都命中如下逻辑
     const isMorning = hours >= 7 && hours <= 9;
 
@@ -214,13 +211,12 @@ function checkInTimeChecker(
       `当前日志记录：
       currTime = ${getTimeString(hours)}:${getTimeString(minutes)}
       targetTime = ${getTimeString(th)}:${getTimeString(tm)}
-      isMorning = ${isMorning}
-      isAtTime = ${isAtTime}`,
+      isMorning = ${isMorning}`,
       "red",
       20
     );
 
-    if (isMorning && isAtTime) {
+    if (isMorning) {
       textLogWithStyle(
         "The current time has reached or exceeded the target time, Open a new window to prepare for check-in !!!",
         "green"
@@ -254,13 +250,13 @@ function init() {
       clearInterval(interval0);
 
       // 获取默认的时间
-      const { checkOutHours, checkOutMinutes, checkType, totalCheckOutTime } =
+      const { checkOutHours, checkOutMinutes, checkType, shouldCheckOut } =
         getPageInfo();
 
       currentCheckType = checkType;
 
       // 签入 和 签出
-      checkType == 1 && totalCheckOutTime < 9
+      shouldCheckOut
         ? startCheckOut(checkOutHours, checkOutMinutes)
         : checkInTimeChecker();
     }
@@ -305,11 +301,12 @@ function sendPageResult() {
   const { futureHours, dayOfWeek, notCheckDates, isWeekend } = getWeekDay();
   const notCheckToday = notCheckDates.includes(moment().format("YYYY-MM-DD"));
 
-  let delay = 0,
+  let delay = 3000,
     preTimer;
 
   // 周末 或 自定义 非打卡期间
   if (futureHours && (notCheckToday || isWeekend)) {
+
     delay = futureHours * 60 * 60 * 1000;
 
     textLogWithStyle(
@@ -317,8 +314,16 @@ function sendPageResult() {
       "#eb7114",
       30
     );
+
+    // 到时间后刷新页面，重新执行
+    setTimeout(() => {
+      window.location.reload();
+    }, delay);
+    return;
   }
 
+  // 计时器
+  clearTimeout(preTimer);
   preTimer = setTimeout(() => {
     clearTimeout(preTimer);
 

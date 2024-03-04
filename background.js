@@ -11,22 +11,6 @@ async function getCurrentTab() {
   return tab;
 }
 
-// fetch 请求
-async function fetchPost(data) {
-  let res = await fetch("https://10.18.119.66:1888/sendEmail", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  let json = await res.json();
-
-  return json;
-}
-
 // 监听来自 content.js 的消息
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   const tab = await getCurrentTab();

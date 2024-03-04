@@ -190,6 +190,7 @@ async function matchSites(visitorId) {
 
     // 掘金站点
     case Sites[3]:
+      return
       // 发起消息让 background.js 刷新目标 tab
       chrome.runtime.sendMessage({
         name: "background-execute-juejin-script",

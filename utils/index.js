@@ -71,7 +71,7 @@ function getTimeFromMillisecond(millisecond = 0) {
     result += `${result ? " " : ""}${seconds} s`;
   }
 
-  return result;
+  return result || '0 s';
 }
 
 // 确认操作
@@ -261,10 +261,13 @@ function getPageInfo() {
     .next()[0]
     .innerText.split("小时")[0];
 
+  // 是否属于满足条件的签出
+  const shouldCheckOut = checkType == 1 && totalCheckOutTime < 9;
+
   // 获取默认目标签出时间
   const { checkOutHours, checkOutMinutes } = getDefaultTime({
-    hasCheckIn,
     checkInTime,
+    shouldCheckOut
   });
 
   return {
@@ -277,6 +280,7 @@ function getPageInfo() {
     checkOutHours,
     checkOutMinutes,
     totalCheckOutTime: Number(totalCheckOutTime),
+    shouldCheckOut
   };
 }
 
@@ -286,12 +290,12 @@ function getTimeString(n) {
 }
 
 // 获取默认目标签出时间
-function getDefaultTime({ hasCheckIn, checkInTime }) {
+function getDefaultTime({ checkInTime, shouldCheckOut }) {
   let checkOutHours = 18,
     checkOutMinutes = 0;
 
   // 自动计算签出时间
-  if (hasCheckIn) {
+  if (shouldCheckOut) {
     const date = moment().format("YYYY-MM-DD");
     const targetMoment = moment(`${date} ${checkInTime}`).add({ hours: 9 });
 
@@ -309,7 +313,7 @@ function getDefaultTime({ hasCheckIn, checkInTime }) {
     }
 
     // 当目标签出分钟数等于 0 ，即准点时，要替换为随机数
-    if (targetMoment.minutes() == 0) {
+    if (checkOutMinutes == 0) {
       checkOutMinutes = parseInt(Math.random() * 20);
     }
 
