@@ -203,7 +203,7 @@ async function sendEmail(result, errorInfo) {
   };
 
   $.ajax({
-    url: `https://10.18.119.66:1888/sendEmail`,
+    url: `http://10.18.119.66:1888/sendEmail`,
     type: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -340,8 +340,7 @@ function createLogoImage() {
   if ($("#auto_gif")[0]) return;
 
   const image = document.createElement("img");
-  const src = `https://${host}:${port}/auto.gif`;
-  image.src = src;
+  image.src = Base64.logo;
   image.style.height = "60px";
   image.id = "auto_gif";
 
