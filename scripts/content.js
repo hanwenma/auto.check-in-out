@@ -37,7 +37,7 @@ async function login_tapd(chkBoxSelector) {
   // 用户名和密码都存在直接登录
   if (UserNameInput.value && PassWordInput.value) {
     $.ajax({
-      url: `http://${host}:${port}/login`,
+      url: `https://${host}:${port}/login`,
       type: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -157,7 +157,7 @@ async function matchSites(visitorId) {
         // 通过 ip 从服务器获取用户信息
 
         const res = await fetch(
-          `http://${host}:${port}/getUserInfo?visitorId=${visitorId}`
+          `https://${host}:${port}/getUserInfo?visitorId=${visitorId}`
         );
         const { code, data } = await res.json();
 

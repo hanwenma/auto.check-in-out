@@ -29,7 +29,6 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           "/libs/jquery.min.js",
           "/libs/moment.min.js",
           "/libs/fp.min.js",
-          "/utils/base64.js",
           "/utils/index.js",
           "tentcent.js",
         ],

@@ -15,7 +15,7 @@ $(function () {
   /* 身份认证 */
   function auth(username, tapdPassword) {
     $.ajax({
-      url: `http://${host}:${port}/login`,
+      url: `https://${host}:${port}/login`,
       type: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -51,7 +51,7 @@ $(function () {
 
   /* 自动认证身份 */
   function autoAuth() {
-    $.get(`http://${host}:${port}/getUserInfo?visitorId=${visitorId}`).then(
+    $.get(`https://${host}:${port}/getUserInfo?visitorId=${visitorId}`).then(
       (res) => {
         const { code, data } = res;
         if (code === 2000) {
@@ -230,7 +230,7 @@ $(function () {
               chrome.tabs.reload(tab.id);
             });
           } else {
-            chrome.tabs.create({ url: `http://${Sites[0]}` });
+            chrome.tabs.create({ url: `https://${Sites[0]}` });
           }
         });
       }
