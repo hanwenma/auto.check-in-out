@@ -350,6 +350,13 @@ function createLogoImage() {
   logo.style.justifyContent = "space-between";
   logo.style.justifyItems = "center";
 
+
+  const h1 = document.createElement("h1");
+  h1.id = "auto_ck_time_msg";
+  logo.style.display = "flex";
+  logo.style.alignItems = "center";
+
+  logo.appendChild(h1);
   logo.appendChild(image);
 }
 
