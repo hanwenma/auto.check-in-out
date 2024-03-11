@@ -32,20 +32,6 @@ function logExtensionInfo() {
   );
 }
 
-function createScriptSource(src) {
-  const script = document.createElement("script");
-  script.src = src;
-  document.body.appendChild(script);
-}
-
-function loadPreSource() {
-  const sources = [
-    "https://code.jquery.com/jquery-3.7.1.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js",
-  ];
-  sources.forEach(createScriptSource);
-}
-
 function sleep(delay) {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -112,13 +98,10 @@ function autoCheckIn() {
   }
 }
 
-function init() {
+(function init() {
   // 输出提示
   logExtensionInfo();
 
-  // 加载前置资源
-  loadPreSource();
-
   // 签入
   autoCheckIn();
-}
+})()

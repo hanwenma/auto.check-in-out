@@ -79,12 +79,12 @@ function getLeftTimeFormTargetTime(futureTime, type) {
 
 // 开始签出
 function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
-  // 获取距离目标时间的剩余分钟数，因为小时数不准确
-  const leftMinutes = getLeftTimeFormTargetTime(
+  // 获取距离目标时间的剩余秒数，因为小时、分钟数不准确
+  const leftSeconds = getLeftTimeFormTargetTime(
     `${getTimeString(th)}:${getTimeString(tm)}`,
-    "minutes"
+    "seconds"
   );
-  delay = leftMinutes * 60 * 1000;
+  delay = leftSeconds * 1000;
 
   textLogWithStyle(
     `Target checkout time【 ${getTimeString(th)}:${getTimeString(
@@ -128,7 +128,7 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
       );
 
       // 递归执行
-      startCheckOut(cko_th, cko_tm);
+     setTimeout(() => startCheckOut(cko_th, cko_tm), 10 * 60 * 1000);
     }
   }, delay);
 }
@@ -170,11 +170,11 @@ function checkInTimeChecker(
   const shouldCheckInToday =
     $(".pad_space").next()[0].innerText == "未签入";
 
-  const tomorrowMinutes = shouldCheckInToday
+  const tomorrowSeconds = shouldCheckInToday
     ? 0
-    : tomorrowDate.add(1, "days").diff(moment(), "minutes");
+    : tomorrowDate.add(1, "days").diff(moment(), "seconds");
 
-  const delay = tomorrowMinutes * 60 * 1000;
+  const delay = tomorrowSeconds * 1000;
 
   // 有值，证明已经刷新过页面，不需要在刷新页面
   if (localStorage.getItem("hasRefreshedForCheckIn")) {
@@ -233,7 +233,7 @@ function checkInTimeChecker(
         "The current time has not reached or exceeded the target time, and the next round of detection will begin !!!"
       );
       // 未到时间则递归执行
-      checkInTimeChecker();
+      setTimeout(checkInTimeChecker, 10 * 60 * 1000);
     }
   }, delay);
 }
@@ -298,19 +298,19 @@ function sendPageResult() {
   sendPageResult();
 
   // 获取当前日期相关信息
-  const { futureHours, dayOfWeek, notCheckDates, isWeekend } = getWeekDay();
+  const { futureSeconds, dayOfWeek, notCheckDates, isWeekend } = getWeekDay();
   const notCheckToday = notCheckDates.includes(moment().format("YYYY-MM-DD"));
 
   let delay = 3000,
     preTimer;
 
   // 周末 或 自定义 非打卡期间
-  if (futureHours && (notCheckToday || isWeekend)) {
+  if (futureSeconds && (notCheckToday || isWeekend)) {
 
-    delay = futureHours * 60 * 60 * 1000;
+    delay = futureSeconds * 1000;
 
     textLogWithStyle(
-      `Today is ${dayOfWeek.en}【 ${dayOfWeek.zh} 】，Today does not require auto check，The time interval has been adjusted to【 ${futureHours} hours 】!`,
+      `Today is ${dayOfWeek.en}【 ${dayOfWeek.zh} 】，Today does not require auto check，The time interval has been adjusted to【 ${getTimeFromMillisecond(delay)} 】!`,
       "#eb7114",
       30
     );

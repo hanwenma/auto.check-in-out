@@ -314,7 +314,7 @@ function getDefaultTime({ checkInTime, shouldCheckOut }) {
 
     // 当目标签出分钟数等于 0 ，即准点时，要替换为随机数
     if (checkOutMinutes == 0) {
-      checkOutMinutes = parseInt(Math.random() * 20);
+      checkOutMinutes = parseInt(Math.random() * 20 + 1);
     }
 
     // 当分钟数不一致，意味着需要重置
@@ -419,8 +419,8 @@ function getWeekDay() {
   ).filter((v) => v);
   let notCheckDate = notCheckDates[1] || notCheckDates[0];
 
-  let futureHours = 0;
-  const clock = `08:${getTimeString(parseInt(Math.random() * 10 + 10))}`;
+  let futureSeconds = 0;
+  const clock = `08:${getTimeString(parseInt(Math.random() * 30 + 10))}`;
   if (notCheckDate || isWeekend) {
     let dateStr = moment().format("YYYY-MM-DD");
 
@@ -429,15 +429,15 @@ function getWeekDay() {
     }
 
     // 加一天的目的是为了达到打卡日期
-    futureHours = moment(`${dateStr} ${clock}`)
+    futureSeconds = moment(`${dateStr} ${clock}`)
       .add(1, "days")
-      .diff(moment(), "hours");
+      .diff(moment(), "seconds");
   }
 
   return {
     dayOfWeek,
     isWeekend, // 周日、周六
-    futureHours, // 多久时间达到可打卡的未来日期
+    futureSeconds, // 多久时间达到可打卡的未来日期
     notCheckDates,
   };
 }

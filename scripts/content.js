@@ -159,11 +159,14 @@ async function matchSites(visitorId) {
         const res = await fetch(
           `https://${host}:${port}/getUserInfo?visitorId=${visitorId}`
         );
-        const { code, data } = await res.json();
+        const { code, data, msg } = await res.json();
 
         if (code === 2000) {
           localStorage.setItem("username", data.name);
           localStorage.setItem("password", data.tapdPassword);
+        }else{
+          alert(msg);
+          return
         }
 
         login_tapd(ActivelyLogout ? "#chkWeek" : "#rememberButton");
@@ -190,12 +193,10 @@ async function matchSites(visitorId) {
 
     // 掘金站点
     case Sites[3]:
-      return
       // 发起消息让 background.js 刷新目标 tab
       chrome.runtime.sendMessage({
         name: "background-execute-juejin-script",
       });
-
       break;
 
     default:
