@@ -98,21 +98,23 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
 
   textColorWithAnimation("To be continued ...", "30px");
 
-  $("#auto_ck_time_msg").text(`目标【 签出 】时间为：【 ${getTimeString(th)}:${getTimeString(
-    tm
-  )} 】`);
+  $("#auto_ck_time_msg").text(
+    `目标【 签出 】时间为：【 ${getTimeString(th)}:${getTimeString(tm)} 】`
+  );
 
   // 轮询判断是否到达或超过目标时间
   clearInterval(timeout0);
   timeout0 = setTimeout(() => {
-    // 是否达到或超过目标时间
-    const d = new Date();
-    const hours = d.getHours();
-    const minutes = d.getMinutes();
-    const isAtTime = hours > th || (hours == th && minutes >= tm);
+    // 当前签出时间
+    const totalCheckOutTime = $(".chk_out_remark")
+      .next()[0]
+      .innerText.split("小时")[0];
+
+    // 是否属于满足条件的签出
+    const shouldCheckOut = totalCheckOutTime < 9;
 
     // 已达到指定时间
-    if (isAtTime) {
+    if (shouldCheckOut) {
       clearInterval(timeout0);
       textLogWithStyle(
         "Target time reached or exceeded, start triggering automatic checkout !!!",
@@ -125,14 +127,10 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
       //  触发签出逻辑
       checkTrigger();
     } else {
-      // 未到指定时间
       textLogWithStyle(
-        "The current time has not reached or exceeded the target time, and the next round of detection will begin !!!",
-        "#f40"
+        "The current check-out time meets 9 hours, no check-out is required！",
+        "red"
       );
-
-      // 递归执行
-     setTimeout(() => startCheckOut(cko_th, cko_tm), 10 * 60 * 1000);
     }
   }, delay);
 }
@@ -156,7 +154,8 @@ function startCheckIn() {
       checkTrigger();
     } else {
       textLogWithStyle(
-        "The check-in button is not fully loaded, continue to the next round of testing!"
+        "The check-in button is not fully loaded, continue to the next round of testing!",
+        "red"
       );
     }
   }, 2000);
@@ -171,8 +170,7 @@ function checkInTimeChecker(
     `${moment().format("YYYY-MM-DD")} ${getTimeString(th)}:${getTimeString(tm)}`
   );
 
-  const shouldCheckInToday =
-    $(".pad_space").next()[0].innerText == "未签入";
+  const shouldCheckInToday = $(".pad_space").next()[0].innerText == "未签入";
 
   const tomorrowSeconds = shouldCheckInToday
     ? 0
@@ -202,8 +200,9 @@ function checkInTimeChecker(
 
   textColorWithAnimation("To be continued ...", "30px");
 
-
-  $("#auto_ck_time_msg").text(`目标【 签入 】时间为：【 ${getTimeString(th)}:${getTimeString(tm)} 】`);
+  $("#auto_ck_time_msg").text(
+    `目标【 签入 】时间为：【 ${getTimeString(th)}:${getTimeString(tm)} 】`
+  );
 
   clearTimeout(timeout1);
   timeout1 = setTimeout(() => {
@@ -240,7 +239,7 @@ function checkInTimeChecker(
         "The current time has not reached or exceeded the target time, and the next round of detection will begin !!!"
       );
       // 未到时间则递归执行
-      setTimeout(checkInTimeChecker, 10 * 60 * 1000);
+      setTimeout(checkInTimeChecker, 5 * 60 * 1000);
     }
   }, delay);
 }
@@ -289,7 +288,7 @@ function sendPageResult() {
       chrome.runtime.sendMessage({
         name: "background-capture-visible-tab",
       });
-    }, 3000);
+    }, 10 * 1000);
   }
 }
 
@@ -313,11 +312,14 @@ function sendPageResult() {
 
   // 周末 或 自定义 非打卡期间
   if (futureSeconds && (notCheckToday || isWeekend)) {
-
     delay = futureSeconds * 1000;
 
     textLogWithStyle(
-      `Today is ${dayOfWeek.en}【 ${dayOfWeek.zh} 】，Today does not require auto check，The time interval has been adjusted to【 ${getTimeFromMillisecond(delay)} 】!`,
+      `Today is ${dayOfWeek.en}【 ${
+        dayOfWeek.zh
+      } 】，Today does not require auto check，The time interval has been adjusted to【 ${getTimeFromMillisecond(
+        delay
+      )} 】!`,
       "#eb7114",
       30
     );
