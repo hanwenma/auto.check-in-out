@@ -71,7 +71,7 @@ function getTimeFromMillisecond(millisecond = 0) {
     result += `${result ? " " : ""}${seconds} s`;
   }
 
-  return result || '0 s';
+  return result || "0 s";
 }
 
 // 确认操作
@@ -184,7 +184,7 @@ async function recognizeCodeWithTesseract(base64) {
 }
 
 // 发送邮件
-async function sendEmail(result, errorInfo) {
+async function sendEmail(result, errorInfo, resentCount = 0) {
   const checkType = localStorage.getItem("checkType");
   if (!errorInfo) {
     localStorage.setItem("hasRefreshedForCheckIn", "");
@@ -202,6 +202,8 @@ async function sendEmail(result, errorInfo) {
     captureDataUrl: chromeStorageLocal.captureDataUrl,
   };
 
+  const dateTime = moment().format("YYYY-MM-DD hh:mm:ss");
+
   $.ajax({
     url: `https://10.18.119.66:1888/sendEmail`,
     type: "POST",
@@ -212,11 +214,27 @@ async function sendEmail(result, errorInfo) {
     async: false,
     contentType: false, // 避免 ajax 请求异常
     success: function (res) {
-      console.log("success = ", res);
-      chrome.storage.local.set({ captureDataUrl: "" });
+      console.log(`【 ${dateTime} 】( Request Success ) = `, res);
+      
+      // 邮件发送成功
+      if (res.code == 2000) {
+        chrome.storage.local.set({ captureDataUrl: "" });
+      } else {
+        // 邮件发送失败
+        // 错误重试，当重试次数超过 3 时不在进行重试，resentCount 记录的是每个不同的请求重试次数
+        if (resentCount < 3) {
+          console.log(`【 ${dateTime} 】10 s 后尝试重新发送邮件...`);
+          setTimeout(() => {
+            sendEmail(result, errorInfo, resentCount + 1);
+          }, 10 * 1000);
+        }else{
+          console.warn(`【 ${dateTime} 】邮件异常重试次数已到达上线！！！`);
+        }
+      }
     },
     error: function (res) {
-      console.log("error = ", res);
+      // 请求发送异常
+      console.log(`【 ${dateTime} 】( Request Error ) = `, res);
       chrome.storage.local.set({ captureDataUrl: "" });
     },
   });
@@ -267,7 +285,7 @@ function getPageInfo() {
   // 获取默认目标签出时间
   const { checkOutHours, checkOutMinutes } = getDefaultTime({
     checkInTime,
-    shouldCheckOut
+    shouldCheckOut,
   });
 
   return {
@@ -280,7 +298,7 @@ function getPageInfo() {
     checkOutHours,
     checkOutMinutes,
     totalCheckOutTime: Number(totalCheckOutTime),
-    shouldCheckOut
+    shouldCheckOut,
   };
 }
 
@@ -349,7 +367,6 @@ function createLogoImage() {
   logo.style.display = "flex";
   logo.style.justifyContent = "space-between";
   logo.style.justifyItems = "center";
-
 
   const h1 = document.createElement("h1");
   h1.id = "auto_ck_time_msg";
