@@ -185,12 +185,16 @@ async function recognizeCodeWithTesseract(base64) {
 
 // 发送邮件
 async function sendEmail(result, errorInfo, resentCount = 0) {
-  const checkType = localStorage.getItem("checkType");
+  let checkType = localStorage.getItem("checkType");
   if (!errorInfo) {
     localStorage.setItem("hasRefreshedForCheckIn", "");
   }
 
   const chromeStorageLocal = await chrome.storage.local.get(["captureDataUrl"]);
+
+  if(chromeStorageLocal.captureDataUrl){
+    checkType = new Date().getHours() < 9 ? 0 : 1;
+  }
 
   const image = $("#image")[0];
   const data = {
