@@ -20,7 +20,7 @@
         "https://om.tencent.com/*",
         "https://tapd.tencent.com/*",
         "https://juejin.cn/*",
-        "https://10.18.119.66:443/*"
+        "https://10.18.119.66:1888/*"
       ]
     }
   ],

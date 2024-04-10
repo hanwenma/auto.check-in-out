@@ -209,7 +209,7 @@ async function sendEmail(result, errorInfo, resentCount = 0) {
   const dateTime = moment().format("YYYY-MM-DD hh:mm:ss");
 
   $.ajax({
-    url: `https://10.18.119.66:443/sendEmail`,
+    url: `https://10.18.119.66:1888/sendEmail`,
     type: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
