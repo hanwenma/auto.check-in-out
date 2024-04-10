@@ -193,7 +193,7 @@ async function sendEmail(result, errorInfo, resentCount = 0) {
   const chromeStorageLocal = await chrome.storage.local.get(["captureDataUrl"]);
 
   if(chromeStorageLocal.captureDataUrl){
-    checkType = new Date().getHours() < 9 ? 0 : 1;
+    checkType = new Date().getHours() < 10 ? 0 : 1;
   }
 
   const image = $("#image")[0];

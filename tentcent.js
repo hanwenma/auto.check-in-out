@@ -262,7 +262,6 @@ function init() {
   clearInterval(interval0);
   interval0 = setInterval(() => {
     if ($(".pad_space")[0]) {
-      textLogWithStyle("The main content of the page is ready !!!");
       clearInterval(interval0);
 
       // 获取默认的时间
@@ -353,6 +352,18 @@ function sendPageResult() {
       `Today is ${dayOfWeek.en}【 ${dayOfWeek.zh} 】，Automatically checking ...`,
       "#5916eb",
       30
+    );
+
+    // 周末是否打卡提示
+    const weekendAction = localStorage.getItem("weekendAction") == "checked";
+    textLogWithStyle(
+      `${
+        weekendAction
+          ? "【 本周末 】将进行【 自动打卡 】，若需要取消"
+          : "【 本周末 】默认【 不需自动打卡 】，若有需要"
+      }，请点击插件图标进行重置！`,
+      "#f40",
+      25
     );
 
     // 初始化执行
