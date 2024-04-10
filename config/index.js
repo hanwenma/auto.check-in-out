@@ -1,6 +1,6 @@
 // 服务相关
 const host = "10.18.119.66";
-const port = "1888";
+const port = "443";
 
 // 站点相关
 const Sites = ["om.tencent.com", "tapd.tencent.com", `${host}:${port}`, 'juejin.cn'];
