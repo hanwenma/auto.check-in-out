@@ -103,8 +103,13 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
   );
 
   // 轮询判断是否到达或超过目标时间
-  clearInterval(timeout0);
+  clearTimeout(timeout0);
   timeout0 = setTimeout(() => {
+    // 激活目标页面
+    chrome.runtime.sendMessage({
+      name: "background-tentcent-active-tab",
+    });
+
     // 当前签出时间
     const totalCheckOutTime = $(".chk_out_remark")
       .next()[0]
@@ -115,7 +120,7 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
 
     // 已达到指定时间
     if (shouldCheckOut) {
-      clearInterval(timeout0);
+      clearTimeout(timeout0);
       textLogWithStyle(
         "Target time reached or exceeded, start triggering automatic checkout !!!",
         "green"
@@ -206,6 +211,11 @@ function checkInTimeChecker(
 
   clearTimeout(timeout1);
   timeout1 = setTimeout(() => {
+    // 激活目标页面
+    chrome.runtime.sendMessage({
+      name: "background-tentcent-active-tab",
+    });
+
     const d = new Date();
     const hours = d.getHours();
     const minutes = d.getMinutes();

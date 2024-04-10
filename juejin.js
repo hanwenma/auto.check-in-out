@@ -98,7 +98,7 @@
         break;
     }
   }
-  
+
   // 输出提示
   logExtensionInfo();
 
@@ -106,3 +106,5 @@
   await sleep(commomDelay);
   autoCheckIn();
 })();
+
+// 你说懂 Diff 算法，但由 Diff 引起的 Bug 你又不懂了 !

@@ -1,6 +1,7 @@
 const Names = [
   "background-execute-tentcent-script",
   "background-capture-visible-tab",
+  "background-tentcent-active-tab",
   "background-execute-juejin-script",
 ];
 
@@ -43,6 +44,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       break;
 
     case Names[2]:
+      const [targetTab] = await chrome.tabs.query({
+        url: "*://om.tencent.com/*",
+      });
+      chrome.tabs.highlight({ tabs: targetTab.index });
+      break;
+
+    case Names[3]:
       // 执行脚本
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
