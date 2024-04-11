@@ -282,6 +282,9 @@ function init() {
 function sendPageResult() {
   // 注册监听事件
   chrome.storage.onChanged.addListener(({ captureDataUrl }) => {
+    // 重置标识
+    localStorage.setItem('captureUpdateTime', moment().format("YYYY-MM-DD HH:MM:SS"));
+
     if (captureDataUrl.newValue) {
       sendEmail();
     }
