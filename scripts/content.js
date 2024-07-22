@@ -165,8 +165,7 @@ async function matchSites(visitorId) {
           localStorage.setItem("username", data.name);
           localStorage.setItem("password", data.tapdPassword);
         }else{
-          alert(msg);
-          return
+          console.error('请求异常：', { code, data, msg });
         }
 
         login_tapd(ActivelyLogout ? "#chkWeek" : "#rememberButton");
@@ -174,25 +173,8 @@ async function matchSites(visitorId) {
 
       break;
 
-    // 服务站点 ( 暂无用 )
-    case Sites[2]:
-      const mainMessageEle = document.querySelector("#main-message");
-
-      // 是否需要高级设置
-      if (
-        mainMessageEle &&
-        mainMessageEle.innerText.includes("您的连接不是私密连接")
-      ) {
-        // 触发高级按钮
-        document.querySelector("#details-button").click();
-        // 触发继续前往按钮
-        document.querySelector("#proceed-link").click();
-      }
-
-      break;
-
     // 掘金站点
-    case Sites[3]:
+    case Sites[2]:
       // 发起消息让 background.js 刷新目标 tab
       chrome.runtime.sendMessage({
         name: "background-execute-juejin-script",
