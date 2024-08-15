@@ -164,8 +164,8 @@ async function matchSites(visitorId) {
         if (code === 2000) {
           localStorage.setItem("username", data.name);
           localStorage.setItem("password", data.tapdPassword);
-        }else{
-          console.error('请求异常：', { code, data, msg });
+        } else {
+          console.error("请求异常：", { code, data, msg });
         }
 
         login_tapd(ActivelyLogout ? "#chkWeek" : "#rememberButton");
@@ -173,8 +173,18 @@ async function matchSites(visitorId) {
 
       break;
 
-    // 掘金站点
+    // MOA 身份认证 
     case Sites[2]:
+      if(location.href.indexOf('passport.woa.com/login')){
+         // 发起消息让 background.js 去执行目标文件
+         chrome.runtime.sendMessage({
+          name: "background-execute-MOA-script",
+        });
+      }
+      break;
+
+    // 掘金站点
+    case Sites[3]:
       // 发起消息让 background.js 刷新目标 tab
       chrome.runtime.sendMessage({
         name: "background-execute-juejin-script",

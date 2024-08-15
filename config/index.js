@@ -3,7 +3,7 @@ const host = "10.18.119.66";
 const port = "1888";
 
 // 站点相关
-const Sites = ["om.tencent.com", "tapd.tencent.com", 'juejin.cn'];
+const Sites = ["om.tencent.com", "tapd.tencent.com",  'passport.woa.com', 'juejin.cn',];
 
 const PathNames = [
   "",

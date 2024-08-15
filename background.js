@@ -2,6 +2,7 @@ const Names = [
   "background-execute-tentcent-script",
   "background-capture-visible-tab",
   "background-tentcent-active-tab",
+  "background-execute-MOA-script",
   "background-execute-juejin-script",
 ];
 
@@ -51,6 +52,19 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       break;
 
     case Names[3]:
+      // 截图操作
+      chrome.tabs.captureVisibleTab(null, {}, (dataUrl) => {
+        chrome.storage.local.set({ captureDataUrl: dataUrl });
+
+        // 执行脚本
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ["/libs/jquery.min.js", "/libs/moment.min.js", "/utils/index.js", "moa.js"],
+        });
+      });
+      break;
+
+    case Names[4]:
       // 执行脚本
       chrome.scripting.executeScript({
         target: { tabId: tab.id },

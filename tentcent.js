@@ -14,7 +14,7 @@ window.onerror = (message, url, lineNo, columnNo) => {
     lastError = currError;
 
     // 上报异常日志
-    sendEmail("程序执行出现异常！", currError);
+    sendEmail({result: "程序执行出现异常！", errorInfo: currError});
   }
 };
 
@@ -64,7 +64,7 @@ function checkTrigger() {
         // 正常情况，直接确认 签入、签出
         comfirmInOrOutAction();
 
-        sendEmail(currentCheckType == 1 ? "本次签出成功！" : "本次签入成功！");
+        sendEmail({result: currentCheckType == 1 ? "本次签出成功！" : "本次签入成功！"});
       }
     }
   }, 3000);

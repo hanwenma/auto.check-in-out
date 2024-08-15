@@ -104,11 +104,12 @@ function verifyCode(text) {
       );
     } else {
       hasCheckOut = true;
-      sendEmail(
-        localStorage.getItem("checkType") == 1
-          ? `本次签出成功！`
-          : `本次签入成功！`
-      );
+      sendEmail({
+        result:
+          localStorage.getItem("checkType") == 1
+            ? `本次签出成功！`
+            : `本次签入成功！`,
+      });
     }
   } else {
     // 识别验证码长度 < 4 或 > 4 ，意味着识别出现错误，需要重新获取验证码内容
@@ -184,7 +185,7 @@ async function recognizeCodeWithTesseract(base64) {
 }
 
 // 发送邮件
-async function sendEmail(result, errorInfo, resentCount = 0) {
+async function sendEmail({ title, userName, result, errorInfo, resentCount = 0 }) {
   let checkType = localStorage.getItem("checkType");
   if (!errorInfo) {
     localStorage.setItem("hasRefreshedForCheckIn", "");
@@ -192,14 +193,15 @@ async function sendEmail(result, errorInfo, resentCount = 0) {
 
   const chromeStorageLocal = await chrome.storage.local.get(["captureDataUrl"]);
 
-  if(chromeStorageLocal.captureDataUrl){
+  if (chromeStorageLocal.captureDataUrl) {
     checkType = new Date().getHours() < 10 ? 0 : 1;
   }
 
   const image = $("#image")[0];
   const data = {
+    title,
     result,
-    name: $(".dropdown-toggle")[0].innerText,
+    name: userName || $(".dropdown-toggle")[0].innerText,
     luckyCode: image ? getBase64(image) : "",
     error: errorInfo,
     checkType,
@@ -219,7 +221,7 @@ async function sendEmail(result, errorInfo, resentCount = 0) {
     contentType: false, // 避免 ajax 请求异常
     success: function (res) {
       console.log(`【 ${dateTime} 】( Request Success ) = `, res);
-      
+
       // 邮件发送成功
       if (res.code == 2000) {
         chrome.storage.local.set({ captureDataUrl: "" });
@@ -229,9 +231,9 @@ async function sendEmail(result, errorInfo, resentCount = 0) {
         if (resentCount < 3) {
           console.log(`【 ${dateTime} 】10 s 后尝试重新发送邮件...`);
           setTimeout(() => {
-            sendEmail(result, errorInfo, resentCount + 1);
+            sendEmail({result, errorInfo, resentCount: resentCount + 1});
           }, 10 * 1000);
-        }else{
+        } else {
           console.warn(`【 ${dateTime} 】邮件异常重试次数已到达上线！！！`);
         }
       }
