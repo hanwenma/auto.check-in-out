@@ -185,7 +185,9 @@ async function recognizeCodeWithTesseract(base64) {
 }
 
 // 发送邮件
-async function sendEmail({ title, userName, result, errorInfo, resentCount = 0 }) {
+async function sendEmail(config = {}) {
+  const  { title, userName, result, errorInfo, resentCount = 0 } = config;
+   
   let checkType = localStorage.getItem("checkType");
   if (!errorInfo) {
     localStorage.setItem("hasRefreshedForCheckIn", "");
