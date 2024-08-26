@@ -210,7 +210,7 @@ async function sendEmail(config = {}) {
     captureDataUrl: chromeStorageLocal.captureDataUrl,
   };
 
-  const dateTime = moment().format("YYYY-MM-DD hh:mm:ss");
+  const dateTime = moment().format("YYYY-MM-DD HH:mm:ss");
 
   $.ajax({
     url: `https://10.18.119.66:1888/sendEmail`,
@@ -466,10 +466,14 @@ function getWeekDay() {
       .diff(moment(), "seconds");
   }
 
+  // 当前日期是否需要打卡
+  const notCheckToday = notCheckDates.includes(moment().format("YYYY-MM-DD"));
+
   return {
     dayOfWeek,
     isWeekend, // 周日、周六
     futureSeconds, // 多久时间达到可打卡的未来日期
     notCheckDates,
+    notCheckToday, // 当前日期是否需要打卡
   };
 }

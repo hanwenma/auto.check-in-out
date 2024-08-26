@@ -283,7 +283,7 @@ function sendPageResult() {
   // 注册监听事件
   chrome.storage.onChanged.addListener(({ captureDataUrl }) => {
     // 重置标识
-    localStorage.setItem('captureUpdateTime', moment().format("YYYY-MM-DD HH:MM:SS"));
+    localStorage.setItem('captureUpdateTime', moment().format("YYYY-MM-DD HH:mm:ss"));
 
     if (captureDataUrl.newValue) {
       sendEmail();
@@ -316,8 +316,7 @@ function sendPageResult() {
   sendPageResult();
 
   // 获取当前日期相关信息
-  const { futureSeconds, dayOfWeek, notCheckDates, isWeekend } = getWeekDay();
-  const notCheckToday = notCheckDates.includes(moment().format("YYYY-MM-DD"));
+  const { futureSeconds, dayOfWeek, notCheckToday, isWeekend } = getWeekDay();
 
   let delay = 3000,
     preTimer;
