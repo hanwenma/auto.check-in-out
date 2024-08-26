@@ -186,7 +186,7 @@ async function recognizeCodeWithTesseract(base64) {
 
 // 发送邮件
 async function sendEmail(config = {}) {
-  const  { title, userName, result, errorInfo, resentCount = 0 } = config;
+  const  { title, content, userName, result, errorInfo, resentCount = 0 } = config;
    
   let checkType = localStorage.getItem("checkType");
   if (!errorInfo) {
@@ -202,6 +202,7 @@ async function sendEmail(config = {}) {
   const image = $("#image")[0];
   const data = {
     title,
+    content,
     result,
     name: userName || $(".dropdown-toggle")[0].innerText,
     luckyCode: image ? getBase64(image) : "",
