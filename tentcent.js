@@ -27,10 +27,19 @@ let currentCheckType = -1;
 
 // 触发签入、签出
 function checkTrigger() {
+  let count = 1;
   //  轮询判断弹窗内容是否完全加载
   clearInterval(interval2);
   interval2 = setInterval(() => {
     textLogWithStyle("Check whether the content has been loaded ...");
+
+    count++;
+    // 若执行了 3 次，弹窗内容都没有加载，此时可能命中了【MOA】认证，需要重新刷新页面，进入认证页面
+    if(count >= 3){
+      clearInterval(interval2);
+      window.location.reload();
+      return;
+    }
 
     if ($("#check_in_table")[0]) {
       clearInterval(interval2);

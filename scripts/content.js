@@ -193,7 +193,6 @@ async function matchSites(visitorId) {
 
     default:
       alert("Currently a non-target site!");
-
       break;
   }
 }
