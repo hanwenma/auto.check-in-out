@@ -1,5 +1,9 @@
 // 自执行函数
 (async function () {
+  const targetPage = document.body.innerText.toLowerCase().indexOf('moa') >= 0;
+
+  if(!targetPage) return;
+
   textLogWithStyle("MOA.js is running...");
 
   // 初始化
