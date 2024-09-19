@@ -20,7 +20,7 @@
         "https://om.tencent.com/*",
         "https://tapd.tencent.com/*",
         "https://juejin.cn/*",
-        "https://passport.woa.com/*"
+        "https://passport.woa.com/login/*"
       ]
     }
   ],
