@@ -14,7 +14,7 @@ window.onerror = (message, url, lineNo, columnNo) => {
     lastError = currError;
 
     // 上报异常日志
-    sendEmail({ result: "程序执行出现异常！", errorInfo: currError });
+    sendEmail({ result: "程序执行出现异常！", title: '异常提醒',errorInfo: currError });
   }
 };
 
