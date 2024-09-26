@@ -68,10 +68,8 @@ async function login_tapd(chkBoxSelector) {
 // 删除本地存储数据
 function removeLoclItem() {
   localStorage.removeItem("executeScriptType");
-  localStorage.removeItem("notCheckDates");
   localStorage.removeItem("visitorId");
   localStorage.removeItem("executeChkIO");
-  localStorage.removeItem("weekendAction");
 }
 
 // 执行脚本
@@ -94,12 +92,7 @@ function onMessageForPopup() {
         break;
 
       case "content-execute-script":
-        localStorage.setItem(
-          "notCheckDates",
-          JSON.stringify(message.notCheckDates || [])
-        );
         localStorage.setItem("executeScriptType", message.type);
-        localStorage.setItem("weekendAction", message.weekendAction);
 
         // 取消操作
         if (message.type == 1) {

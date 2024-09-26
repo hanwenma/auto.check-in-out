@@ -1,6 +1,4 @@
 $(function () {
-  console.log(new Date());
-
   let currentTab = null;
   let visitorId = "";
 
@@ -99,9 +97,7 @@ $(function () {
   /* 注册日期事件 */
   function registerDateEvent() {
     // 初始化
-    const notCheckDates = JSON.parse(
-      localStorage.getItem("notCheckDates") || "[]"
-    );
+    const notCheckDates = JSON.parse(StorageData.notCheckDates);
     $("#start-date").val(notCheckDates[0] || "");
     $("#start-date").attr("max", notCheckDates[1] || "");
     $("#end-date").val(notCheckDates[1] || "");
@@ -124,15 +120,26 @@ $(function () {
   }
 
   /* 注册单选框事件 */
-  function registerCheckboxEvent() {
+ function registerCheckboxEvent() {
     // 初始化
-    const weekendAction = localStorage.getItem("weekendAction");
-    $("#weekend-checkbox").attr("checked", !!weekendAction);
+    $("#weekend-checkbox").attr("checked", !!StorageData.weekendAction);
 
     // 具体事件
     $("#weekend-checkbox").on("change", function () {
       console.log($("input[type='checkbox']:checked").length);
     });
+  }
+
+  function getCurrDate(){
+    const d = new Date();
+    let year = d.getFullYear(), month = d.getMonth() + 1, date = d.getDate();
+    if(month < 10){
+      month = '0' + month;
+    }
+    if(date < 10){
+      date = '0' + date;
+    }
+    return `${year}-${month}-${date}`;
   }
 
   /* 按钮操作 */
@@ -145,24 +152,20 @@ $(function () {
     const endDate = $("#end-date").val();
     if (startDate || endDate) {
       notCheckDates.push(startDate, endDate);
-      localStorage.setItem(
-        "notCheckDates",
-        JSON.stringify(notCheckDates || [])
-      );
     }
 
     // 周末是否需要打卡
     const weekendAction = $("input[type='checkbox']:checked").length
       ? "checked"
       : "";
-    localStorage.setItem("weekendAction", weekendAction);
+    
+    // 存储数据
+    await chrome.storage.local.set({ weekendAction, weekendActionDate: weekendAction ? getCurrDate() : '', notCheckDates: JSON.stringify(notCheckDates || []) });
 
     // 0 - 签入和签出  1 - 取消
     const response = await chrome.tabs.sendMessage(currentTab.id, {
       name: "content-execute-script",
       type,
-      notCheckDates,
-      weekendAction,
     });
 
     let delay = 500;
@@ -173,9 +176,8 @@ $(function () {
 
       $("#start-date").val("");
       $("#end-date").val("");
-      localStorage.removeItem("notCheckDates");
-      localStorage.removeItem("weekendAction");
       $("#weekend-checkbox").attr("checked", false);
+      await chrome.storage.local.set({ weekendAction:'', notCheckDates: '[]' });
     }
 
     // 延时关闭 loading
@@ -238,10 +240,15 @@ $(function () {
     return inTargetSite;
   }
 
+  // 插件本地存储数据
+var StorageData = {};
+
   /* 初始化页面内容 */
   async function initPage() {
     // 初始化隐藏
     hideEle();
+
+    StorageData = await chrome.storage.local.get(["weekendAction",'notCheckDates']);
 
     // 获取当前 tab 页
     await getCurrentTab();

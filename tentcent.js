@@ -14,7 +14,7 @@ window.onerror = (message, url, lineNo, columnNo) => {
     lastError = currError;
 
     // 上报异常日志
-    sendEmail({result: "程序执行出现异常！", errorInfo: currError});
+    sendEmail({ result: "程序执行出现异常！", errorInfo: currError });
   }
 };
 
@@ -35,7 +35,7 @@ function checkTrigger() {
 
     count++;
     // 若执行了 3 次，弹窗内容都没有加载，此时可能命中了【MOA】认证，需要重新刷新页面，进入认证页面
-    if(count >= 3){
+    if (count >= 3) {
       clearInterval(interval2);
       window.location.reload();
       return;
@@ -73,7 +73,9 @@ function checkTrigger() {
         // 正常情况，直接确认 签入、签出
         comfirmInOrOutAction();
 
-        sendEmail({result: currentCheckType == 1 ? "本次签出成功！" : "本次签入成功！"});
+        sendEmail({
+          result: currentCheckType == 1 ? "本次签出成功！" : "本次签入成功！",
+        });
       }
     }
   }, 3000);
@@ -108,7 +110,7 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
   textColorWithAnimation("To be continued ...", "30px");
 
   $("#auto_ck_time_msg").text(
-    `目标【 签出 】时间为：【 ${getTimeString(th)}:${getTimeString(tm)} 】`
+    `目标时间【 ${getTimeString(th)}:${getTimeString(tm)} 】`
   );
 
   // 轮询判断是否到达或超过目标时间
@@ -292,7 +294,10 @@ function sendPageResult() {
   // 注册监听事件
   chrome.storage.onChanged.addListener(({ captureDataUrl }) => {
     // 重置标识
-    localStorage.setItem('captureUpdateTime', moment().format("YYYY-MM-DD HH:mm:ss"));
+    localStorage.setItem(
+      "captureUpdateTime",
+      moment().format("YYYY-MM-DD HH:mm:ss")
+    );
 
     if (captureDataUrl.newValue) {
       sendEmail();
@@ -313,8 +318,40 @@ function sendPageResult() {
   }
 }
 
+// 插件本地存储数据
+var StorageData = {};
+
 // 自执行函数
 (async function () {
+
+  StorageData = await chrome.storage.local.get([
+    "weekendAction",
+    "weekendActionDate",
+    "notCheckDates",
+  ]);
+
+  // 判断【无需打卡日期】是否已过期，过期则重置
+  const notCheckDates = JSON.parse(StorageData.notCheckDates || "[]");
+  if (
+    notCheckDates.length > 0 &&
+    moment().isAfter(moment(notCheckDates[1] || notCheckDates[0]))
+  ) {
+    await chrome.storage.local.set({ notCheckDates: "[]" });
+    StorageData.notCheckDates = "[]";
+  }
+
+  // 计算出【周末打卡】的最后一天日期，即周日，超过就重置
+  if (StorageData.weekendActionDate) {
+    const days = 7 - moment(StorageData.weekendActionDate).day();
+    const isOverSunday = moment().isAfter(moment().add(days, "days"));
+
+    if (isOverSunday) {
+      await chrome.storage.local.set({ weekendAction: "", weekendActionDate: "" });
+      StorageData.weekendAction = "";
+      StorageData.weekendActionDate = "";
+    }
+  }
+
   // 创建页面 logo
   createLogoImage();
 
@@ -322,10 +359,11 @@ function sendPageResult() {
   localStorage.setItem("executeChkIO", true);
 
   // 将当前操作的结果进行截图发送
-  sendPageResult();
+  // sendPageResult();
 
   // 获取当前日期相关信息
-  const { futureSeconds, dayOfWeek, notCheckToday, isWeekend } = getWeekDay();
+  const { futureSeconds, dayOfWeek, notCheckToday, isWeekend } =
+    getWeekDay(StorageData);
 
   let delay = 3000,
     preTimer;
@@ -356,7 +394,7 @@ function sendPageResult() {
   preTimer = setTimeout(() => {
     clearTimeout(preTimer);
 
-    const { dayOfWeek } = getWeekDay();
+    const { dayOfWeek } = getWeekDay(StorageData);
 
     // 正常打卡日期
     textLogWithStyle(
@@ -366,15 +404,18 @@ function sendPageResult() {
     );
 
     // 周末是否打卡提示
-    const weekendAction = localStorage.getItem("weekendAction") == "checked";
+    const isWeekendCheck = StorageData.weekendAction == "checked";
+
     textLogWithStyle(
       `${
-        weekendAction
-          ? "【 本周末 】将进行【 自动打卡 】，若需要取消"
-          : "【 本周末 】默认【 不需自动打卡 】，若有需要"
-      }，请点击插件图标进行重置！`,
+        isWeekendCheck
+          ? "【 本周末 】将进行【 自动打卡 】"
+          : "【 本周末 】默认【 不需自动打卡 】"
+      }，【 不需打卡日期 】为 ${StorageData.notCheckDates
+        .replace(/,/g, " 至 ")
+        .replace(/"/g, "")}`,
       "#f40",
-      25
+      20
     );
 
     // 初始化执行

@@ -419,7 +419,7 @@ async function getBrowserFinger(callback) {
 }
 
 // 获取周信息
-function getWeekDay() {
+function getWeekDay({weekendAction, notCheckDates}) {
   const weekDays = [
     { zh: "周日", en: "Sunday" },
     { zh: "周一", en: "Monday" },
@@ -438,7 +438,6 @@ function getWeekDay() {
   let isWeekend = targetDayIndex === 6 || targetDayIndex === 0;
 
   // 设定周末需要打卡时，覆盖前面的判断值
-  const weekendAction = localStorage.getItem("weekendAction");
   if (weekendAction) isWeekend = false;
 
   // 判断目标日期是否为周六或者周天（公共假日）
@@ -447,18 +446,16 @@ function getWeekDay() {
   }
 
   // 不需要打卡日期
-  const notCheckDates = JSON.parse(
-    localStorage.getItem("notCheckDates") || "[]"
-  ).filter((v) => v);
-  let notCheckDate = notCheckDates[1] || notCheckDates[0];
+  notCheckDates = JSON.parse(notCheckDates || "[]").filter((v) => v);
+  let targetNotCheckDate = notCheckDates[1] || notCheckDates[0];
 
   let futureSeconds = 0;
   const clock = `08:${getTimeString(parseInt(Math.random() * 30 + 10))}`;
-  if (notCheckDate || isWeekend) {
+  if (targetNotCheckDate || isWeekend) {
     let dateStr = moment().format("YYYY-MM-DD");
 
-    if (notCheckDate) {
-      dateStr = notCheckDate;
+    if (targetNotCheckDate) {
+      dateStr = targetNotCheckDate;
     }
 
     // 加一天的目的是为了达到打卡日期

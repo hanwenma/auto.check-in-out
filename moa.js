@@ -42,10 +42,15 @@ function autoAction() {
   }, 2000);
 }
 
+// 插件本地存储数据
+var StorageData = {};
+
 // 过期重刷页面
-function isNeedRefresh() {
+async function isNeedRefresh() {
+  StorageData = await chrome.storage.local.get(["weekendAction","notCheckDates"]);
+
   // 获取当前日期相关信息
-  const { isWeekend } = getWeekDay();
+  const { isWeekend } = getWeekDay(StorageData);
   let maxCount = Number(localStorage.getItem('RefreshCount') || '3');
 
   // 超过 3 次，不再触发验证，并重置 RefreshCount
