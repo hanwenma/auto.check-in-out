@@ -97,7 +97,7 @@ $(function () {
   /* 注册日期事件 */
   function registerDateEvent() {
     // 初始化
-    const notCheckDates = JSON.parse(StorageData.notCheckDates);
+    const notCheckDates = JSON.parse(StorageData.notCheckDates||'[]');
     $("#start-date").val(notCheckDates[0] || "");
     $("#start-date").attr("max", notCheckDates[1] || "");
     $("#end-date").val(notCheckDates[1] || "");
