@@ -366,24 +366,19 @@ function createLogoImage() {
 
   if ($("#auto_gif")[0]) return;
 
-  const image = document.createElement("img");
-  image.src = `https://${host}:${port}/auto.gif`;
-  image.style.height = "60px";
-  image.id = "auto_gif";
-
   const logo = $("#logo")[0];
-
   logo.style.display = "flex";
   logo.style.justifyContent = "space-between";
   logo.style.justifyItems = "center";
-
-  const h1 = document.createElement("h1");
-  h1.id = "auto_ck_time_msg";
-  logo.style.display = "flex";
   logo.style.alignItems = "center";
 
-  logo.appendChild(h1);
-  logo.appendChild(image);
+  const div = document.createElement("div");
+  div.innerHTML = `
+  <img src="https://${host}:${port}/auto.gif" height="10px" id="auto_gif" />
+  <h1 id="auto_ck_time_msg" style="margin-top:10px"></h1>
+  `
+
+  logo.appendChild(div);
 }
 
 function logMessage() {

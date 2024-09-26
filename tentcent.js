@@ -110,7 +110,7 @@ function startCheckOut(th = cko_th, tm = cko_tm, delay = 0) {
   textColorWithAnimation("To be continued ...", "30px");
 
   $("#auto_ck_time_msg").text(
-    `目标时间【 ${getTimeString(th)}:${getTimeString(tm)} 】`
+    `${getTimeString(th)}:${getTimeString(tm)}`
   );
 
   // 轮询判断是否到达或超过目标时间
@@ -217,7 +217,7 @@ function checkInTimeChecker(
   textColorWithAnimation("To be continued ...", "30px");
 
   $("#auto_ck_time_msg").text(
-    `目标【 签入 】时间为：【 ${getTimeString(th)}:${getTimeString(tm)} 】`
+    `${getTimeString(th)}:${getTimeString(tm)}`
   );
 
   clearTimeout(timeout1);
