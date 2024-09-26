@@ -359,7 +359,7 @@ var StorageData = {};
   localStorage.setItem("executeChkIO", true);
 
   // 将当前操作的结果进行截图发送
-  // sendPageResult();
+  sendPageResult();
 
   // 获取当前日期相关信息
   const { futureSeconds, dayOfWeek, notCheckToday, isWeekend } =
