@@ -411,7 +411,7 @@ var StorageData = {};
         isWeekendCheck
           ? "【 本周末 】将进行【 自动打卡 】"
           : "【 本周末 】默认【 不需自动打卡 】"
-      }，【 不需打卡日期 】为 ${StorageData.notCheckDates
+      }，【 不需打卡日期 】为 ${StorageData.notCheckDates||"[]"
         .replace(/,/g, " 至 ")
         .replace(/"/g, "")}`,
       "#f40",
