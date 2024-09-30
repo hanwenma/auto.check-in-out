@@ -340,18 +340,6 @@ var StorageData = {};
     StorageData.notCheckDates = "[]";
   }
 
-  // 计算出【周末打卡】的最后一天日期，即周日，超过就重置
-  if (StorageData.weekendActionDate) {
-    const days = 7 - moment(StorageData.weekendActionDate).day();
-    const isOverSunday = moment().isAfter(moment().add(days, "days"));
-
-    if (isOverSunday) {
-      await chrome.storage.local.set({ weekendAction: "", weekendActionDate: "" });
-      StorageData.weekendAction = "";
-      StorageData.weekendActionDate = "";
-    }
-  }
-
   // 创建页面 logo
   createLogoImage();
 

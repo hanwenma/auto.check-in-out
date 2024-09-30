@@ -186,8 +186,15 @@ async function recognizeCodeWithTesseract(base64) {
 
 // 发送邮件
 async function sendEmail(config = {}) {
-  const  { title, content, userName, result, errorInfo, resentCount = 0 } = config;
-   
+  const {
+    title,
+    content,
+    userName,
+    result,
+    errorInfo,
+    resentCount = 0,
+  } = config;
+
   let checkType = localStorage.getItem("checkType");
   if (!errorInfo) {
     localStorage.setItem("hasRefreshedForCheckIn", "");
@@ -234,7 +241,7 @@ async function sendEmail(config = {}) {
         if (resentCount < 3) {
           console.log(`【 ${dateTime} 】10 s 后尝试重新发送邮件...`);
           setTimeout(() => {
-            sendEmail({result, errorInfo, resentCount: resentCount + 1});
+            sendEmail({ result, errorInfo, resentCount: resentCount + 1 });
           }, 10 * 1000);
         } else {
           console.warn(`【 ${dateTime} 】邮件异常重试次数已到达上线！！！`);
@@ -376,7 +383,7 @@ function createLogoImage() {
   div.innerHTML = `
   <img src="https://${host}:${port}/auto.gif" height="10px" id="auto_gif" />
   <h1 id="auto_ck_time_msg" style="margin-top:10px"></h1>
-  `
+  `;
 
   logo.appendChild(div);
 }
@@ -414,7 +421,9 @@ async function getBrowserFinger(callback) {
 }
 
 // 获取周信息
-function getWeekDay({weekendAction, notCheckDates}) {
+function getWeekDay(StorageData) {
+  let { weekendAction, weekendActionDate, notCheckDates } = StorageData;
+
   const weekDays = [
     { zh: "周日", en: "Sunday" },
     { zh: "周一", en: "Monday" },
@@ -434,11 +443,6 @@ function getWeekDay({weekendAction, notCheckDates}) {
 
   // 设定周末需要打卡时，覆盖前面的判断值
   if (weekendAction) isWeekend = false;
-
-  // 判断目标日期是否为周六或者周天（公共假日）
-  if (isWeekend) {
-    dayOfWeek = weekDays[targetDayIndex];
-  }
 
   // 不需要打卡日期
   notCheckDates = JSON.parse(notCheckDates || "[]").filter((v) => v);
@@ -461,6 +465,20 @@ function getWeekDay({weekendAction, notCheckDates}) {
 
   // 当前日期是否需要打卡
   const notCheckToday = notCheckDates.includes(moment().format("YYYY-MM-DD"));
+
+  // 计算出【周末打卡】的最后一天日期，即周日，超过就重置
+  if (weekendActionDate) {
+    const days = 7 - moment(weekendActionDate).day();
+    const Sunday = moment().add(days, "days");
+    const isOverSunday = moment().isAfter(Sunday);
+
+    if (!isOverSunday) {
+      chrome.storage.local.set({
+        weekendAction: "",
+        weekendActionDate: "",
+      });
+    }
+  }
 
   return {
     dayOfWeek,

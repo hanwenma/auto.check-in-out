@@ -29,7 +29,7 @@ function autoAction() {
       title: `${moment().format(
         "YYYY-MM-DD HH:mm:ss"
       )} (${userName}) MOA 验证提醒`,
-      content: "【工作日】会自动进行【3 次】认证提示【间隔 10 分钟】请及时进行验证，【周末】会延迟至【第二天】进行验证！",
+      content: "【工作日】会自动进行【3 次】认证提示【间隔 8 分钟】请及时进行验证，【周末】会延迟至【第二天】进行验证！",
       userName,
     });
 
@@ -56,12 +56,12 @@ async function isNeedRefresh() {
   };
 
   // 一次 MOA 认证有效期约为【5 分钟】，若用户未及时进行认证，需重新刷新页面再次发起新的认证
-  let delay = 10 * 60 * 1000;
+  let delay = 8 * 60 * 1000;
 
   // 周末等到第二天重新验证
   if(isWeekend){
     const dateStr = moment().format("YYYY-MM-DD");
-    delay = moment(`${dateStr} 08:40`)
+    delay = moment(`${dateStr} 08:28`)
     .add(1, "days")
     .diff(moment(), "seconds") * 1000;
   }
