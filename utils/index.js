@@ -221,7 +221,7 @@ async function sendEmail(config = {}) {
   const dateTime = moment().format("YYYY-MM-DD HH:mm:ss");
 
   $.ajax({
-    url: `https://10.18.119.66:1888/sendEmail`,
+    url: `https://10.18.119.58:1888/sendEmail`,
     type: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
