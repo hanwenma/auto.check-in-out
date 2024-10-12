@@ -472,7 +472,7 @@ function getWeekDay(StorageData) {
     const Sunday = moment().add(days, "days");
     const isOverSunday = moment().isAfter(Sunday);
 
-    if (!isOverSunday) {
+    if (isOverSunday) {
       chrome.storage.local.set({
         weekendAction: "",
         weekendActionDate: "",
