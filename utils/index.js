@@ -437,6 +437,8 @@ function getWeekDay(StorageData) {
   const targetDate = moment(new Date());
   const targetDayIndex = targetDate.day();
 
+  const currDateStr = moment().format("YYYY-MM-DD");
+
   // 周末
   let dayOfWeek = weekDays[targetDayIndex];
   let isWeekend = targetDayIndex === 6 || targetDayIndex === 0;
@@ -451,7 +453,7 @@ function getWeekDay(StorageData) {
   let futureSeconds = 0;
   const clock = `08:${getTimeString(parseInt(Math.random() * 30 + 10))}`;
   if (targetNotCheckDate || isWeekend) {
-    let dateStr = moment().format("YYYY-MM-DD");
+    let dateStr = currDateStr;
 
     if (targetNotCheckDate) {
       dateStr = targetNotCheckDate;
@@ -464,13 +466,13 @@ function getWeekDay(StorageData) {
   }
 
   // 当前日期是否需要打卡
-  const notCheckToday = notCheckDates.includes(moment().format("YYYY-MM-DD"));
+  const notCheckToday = notCheckDates.includes(currDateStr);
 
   // 计算出【周末打卡】的最后一天日期，即周日，超过就重置
   if (weekendActionDate) {
     const days = 7 - moment(weekendActionDate).day();
-    const Sunday = moment().add(days, "days");
-    const isOverSunday = moment().isAfter(Sunday);
+    const SundayDateStr = moment(weekendActionDate).add(days, "days").format("YYYY-MM-DD");
+    const isOverSunday = moment(currDateStr).isAfter(moment(SundayDateStr));
 
     if (isOverSunday) {
       chrome.storage.local.set({
