@@ -168,8 +168,8 @@ async function matchSites(visitorId) {
 
     // MOA 身份认证 
     case Sites[2]:
-      if(location.href.indexOf('passport.woa.com/login')){
-         // 发起消息让 background.js 去执行目标文件
+      if(location.pathname.indexOf('/login') >= 0){
+        //  发起消息让 background.js 去执行目标文件
          chrome.runtime.sendMessage({
           name: "background-execute-MOA-script",
         });
