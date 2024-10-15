@@ -386,6 +386,40 @@ function createLogoImage() {
   `;
 
   logo.appendChild(div);
+
+  creatUpdateEmailBtn();
+}
+
+// 为页面添加插件更新邮件通知按钮
+function creatUpdateEmailBtn(){
+  const admin = $(".dropdown-toggle")[0].innerText.indexOf('hanwma') > -1;
+  if(admin){
+    const btn = document.createElement("button");
+    btn.innerText = "插件更新通知";
+    btn.style.opacity = "0";
+    btn.title = "插件更新通知";
+    btn.onclick = () => {
+      const dateTime = moment().format("YYYY-MM-DD HH:mm:ss");
+      $.ajax({
+        url: `https://10.18.119.58:1888/versionUpdate`,
+        type: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+        },
+        data: {},
+        async: false,
+        contentType: false, // 避免 ajax 请求异常
+        success: function (res) {
+          console.log(`【 ${dateTime} 】更新邮件发送成功 = `, res);
+        },
+        error: function (res) {
+          // 请求发送异常
+          console.log(`【 ${dateTime} 】更新邮件发送失败 = `, res);
+        },
+      });
+    };
+    document.body.appendChild(btn);
+  }
 }
 
 function logMessage() {
