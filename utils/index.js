@@ -221,7 +221,7 @@ async function sendEmail(config = {}) {
   const dateTime = moment().format("YYYY-MM-DD HH:mm:ss");
 
   $.ajax({
-    url: `https://10.18.119.58:1888/sendEmail`,
+    url: `https://10.18.119.68:1888/sendEmail`,
     type: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -401,7 +401,7 @@ function creatUpdateEmailBtn(){
     btn.onclick = () => {
       const dateTime = moment().format("YYYY-MM-DD HH:mm:ss");
       $.ajax({
-        url: `https://10.18.119.58:1888/versionUpdate`,
+        url: `https://10.18.119.68:1888/versionUpdate`,
         type: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -506,7 +506,7 @@ function getWeekDay(StorageData) {
   if (weekendActionDate) {
     const days = 7 - moment(weekendActionDate).day();
     const SundayDateStr = moment(weekendActionDate).add(days, "days").format("YYYY-MM-DD");
-    const isOverSunday = moment(currDateStr).isAfter(moment(SundayDateStr));
+    const isOverSunday = moment(currDateStr).isAfter(moment(SundayDateStr).add(1, "days"));
 
     if (isOverSunday) {
       chrome.storage.local.set({

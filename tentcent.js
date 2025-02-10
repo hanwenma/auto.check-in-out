@@ -334,7 +334,7 @@ var StorageData = {};
   const notCheckDates = JSON.parse(StorageData.notCheckDates || "[]");
   if (
     notCheckDates.length > 0 &&
-    moment().isAfter(moment(notCheckDates[1] || notCheckDates[0]))
+    moment().isAfter(moment(notCheckDates[1] || notCheckDates[0]).add(1, "days"))
   ) {
     await chrome.storage.local.set({ notCheckDates: "[]" });
     StorageData.notCheckDates = "[]";
